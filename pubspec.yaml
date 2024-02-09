@@ -1,5 +1,5 @@
 name: cojob
-description: "Work environment communication app."
+description: 'Work environment communication app.'
 publish_to: 'none'
 version: 0.1.0
 
@@ -11,6 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite: ^2.3.2
+  path: ^1.8.3
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
