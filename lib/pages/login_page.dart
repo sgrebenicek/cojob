@@ -1,4 +1,5 @@
 import 'package:cojob/pages/register_page.dart';
+import 'package:cojob/variables/text_sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:cojob/validators/email_validator.dart';
 
@@ -22,6 +23,7 @@ class LoginFormState extends State<LoginForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const LargeHeader(text: 'Login'),
             //Email Address
             TextFormField(
               decoration: const InputDecoration(labelText: ('Email Address')),
@@ -47,8 +49,10 @@ class LoginFormState extends State<LoginForm> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_loginFormKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterForm()),
                     );
                   }
                 },

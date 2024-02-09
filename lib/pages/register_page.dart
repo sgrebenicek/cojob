@@ -2,6 +2,7 @@ import 'package:cojob/pages/login_page.dart';
 import 'package:cojob/validators/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:cojob/validators/email_validator.dart';
+import 'package:cojob/variables/text_sizes.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -23,17 +24,26 @@ class RegisterFormState extends State<RegisterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'Register',
-              style: TextStyle(fontSize: 50),
-            ),
+            const LargeHeader(text: 'Register'),
             //First Name
             TextFormField(
               decoration: const InputDecoration(labelText: 'First Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Enter your first name';
+                }
+                return null;
+              },
             ),
             //Last Name
             TextFormField(
               decoration: const InputDecoration(labelText: 'Last Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Enter your last name';
+                }
+                return null;
+              },
             ),
             //Email Address
             TextFormField(
@@ -61,8 +71,10 @@ class RegisterFormState extends State<RegisterForm> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_registerFormKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginForm()),
                     );
                   }
                 },

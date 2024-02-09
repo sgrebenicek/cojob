@@ -1,5 +1,6 @@
 import 'package:cojob/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cojob/variables/themes.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -7,10 +8,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const appTitle = 'cojob';
-
-    return const MaterialApp(
+    return MaterialApp(
+      theme: mainTheme,
       title: appTitle,
-      home: Scaffold(
+      home: const Scaffold(
         body: LoginForm(),
       ),
     );
