@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:cojob/models/user.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://34.118.65.109';
+  static const String baseUrl = 'http://0.0.0.0:3000';
 
   static Future<List<User>> fetchUsers() async {
-    final response = await http.get(Uri.parse('$baseUrl/users'));
+    final response = await http.get(Uri.parse("$baseUrl/users"));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => User.fromJson(json)).toList();
@@ -17,7 +17,7 @@ class ApiService {
 
   static Future<void> createUser(User user) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/users'),
+      Uri.parse("$baseUrl/users"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -31,7 +31,7 @@ class ApiService {
       ),
     );
     if (response.statusCode != 201) {
-      throw Exception('Failed to create user');
+      throw Exception(response.statusCode);
     }
   }
 }

@@ -8,10 +8,9 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const appTitle = 'cojob';
-    return MaterialApp(
-      theme: mainTheme,
+    return const MaterialApp(
       title: appTitle,
-      home: const Scaffold(
+      home: Scaffold(
         body: LoginForm(),
       ),
     );
