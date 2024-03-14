@@ -1,53 +1,58 @@
 import 'package:cojob/pages/login_page.dart';
-import 'package:cojob/validators/password_validator.dart';
-import 'package:flutter/material.dart';
-import 'package:cojob/validators/email_validator.dart';
 import 'package:cojob/variables/text_sizes.dart';
+import 'package:flutter/material.dart';
+import 'package:cojob/models/user.dart';
+import 'package:cojob/api_service.dart';
+import 'package:cojob/validators/email_validator.dart';
+import 'package:cojob/validators/password_validator.dart';
 
-class RegisterForm extends StatefulWidget {
-  const RegisterForm({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  RegisterFormState createState() {
-    return RegisterFormState();
-  }
+  RegisterPageState createState() => RegisterPageState();
 }
 
-class RegisterFormState extends State<RegisterForm> {
-  final _registerFormKey = GlobalKey<FormState>();
+class RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Form(
-        key: _registerFormKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const LargeHeader(text: 'Register'),
-            //First Name
             TextFormField(
+              controller: firstNameController,
               decoration: const InputDecoration(labelText: 'First Name'),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Enter your first name';
+                if (value!.isEmpty) {
+                  return 'Please enter your first name';
                 }
                 return null;
               },
             ),
-            //Last Name
             TextFormField(
+              controller: lastNameController,
               decoration: const InputDecoration(labelText: 'Last Name'),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Enter your last name';
+                if (value!.isEmpty) {
+                  return 'Please enter your last name';
                 }
                 return null;
               },
             ),
-            //Email Address
             TextFormField(
-              decoration: const InputDecoration(labelText: ('Email Address')),
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
               validator: (value) {
                 if (!value.isValidEmail()) {
                   return emailRequirements;
@@ -55,10 +60,10 @@ class RegisterFormState extends State<RegisterForm> {
                 return null;
               },
             ),
-            //Password
             TextFormField(
+              controller: passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
-              decoration: const InputDecoration(labelText: ('Password')),
               validator: (value) {
                 if (!value.isValidPassword()) {
                   return passwordRequirements;
@@ -67,32 +72,82 @@ class RegisterFormState extends State<RegisterForm> {
               },
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_registerFormKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginForm()),
-                    );
+                  if (_formKey.currentState!.validate()) {
+                    createUser();
                   }
                 },
-                child: const Text('Register'),
+                child: const Text('Submit'),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
+            GestureDetector(
+              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginForm()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
-              child: const Text('Already have an account? Login here.'),
-            )
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Already have an account? Login here.',
+                  style: TextStyle(color: Color.fromARGB(255, 3, 39, 244)),
+                ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void createUser() {
+    String firstName = firstNameController.text;
+    String lastName = lastNameController.text;
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    User newUser = User(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+    );
+
+    ApiService.createUser(newUser).then((_) {
+      print('User created successfully');
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+      );
+    }).catchError(
+      (err) {
+        print('Failed to create user: $err');
+        if (err == 111) {
+          print('Conn error');
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: const Text('This email is already taken.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
     );
   }
 }

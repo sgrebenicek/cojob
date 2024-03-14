@@ -1,25 +1,27 @@
+import 'package:cojob/app.dart';
 import 'package:cojob/pages/register_page.dart';
 import 'package:cojob/variables/text_sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:cojob/validators/email_validator.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  LoginFormState createState() {
-    return LoginFormState();
+  LoginPageState createState() {
+    return LoginPageState();
   }
 }
 
-class LoginFormState extends State<LoginForm> {
-  final _loginFormKey = GlobalKey<FormState>();
+class LoginPageState extends State<LoginPage> {
+  final _loginPageKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Form(
-        key: _loginFormKey,
+        key: _loginPageKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -48,26 +50,32 @@ class LoginFormState extends State<LoginForm> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_loginFormKey.currentState!.validate()) {
+                  if (_loginPageKey.currentState!.validate()) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const RegisterForm()),
+                          builder: (context) => const RegisterPage()),
                     );
                   }
                 },
                 child: const Text('Login'),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
+            GestureDetector(
+              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegisterForm()),
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
                 );
               },
-              child: const Text('Do not have an account yet? Register here.'),
-            )
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Do not have an account yet? Register here.',
+                  style: TextStyle(color: Color.fromARGB(255, 3, 39, 244)),
+                ),
+              ),
+            ),
           ],
         ),
       ),

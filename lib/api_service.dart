@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:cojob/models/user.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://0.0.0.0:3000';
+  static const String baseUrl = 'http://localhost:3000';
 
   static Future<List<User>> fetchUsers() async {
     final response = await http.get(Uri.parse("$baseUrl/users"));
