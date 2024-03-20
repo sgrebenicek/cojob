@@ -1,82 +1,88 @@
-import 'package:cojob/app.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cojob/pages/register_page.dart';
-import 'package:cojob/variables/text_sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:cojob/validators/email_validator.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:cojob/api_service.dart';
+import 'package:cojob/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  LoginPageState createState() {
-    return LoginPageState();
-  }
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final _loginPageKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Form(
         key: _loginPageKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const LargeHeader(text: 'Login'),
-            //Email Address
-            TextFormField(
-              decoration: const InputDecoration(labelText: ('Email Address')),
-              validator: (value) {
-                if (!value.isValidEmail()) {
-                  return emailRequirements;
-                }
-                return null;
-              },
-            ),
-            //Password
-            TextFormField(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
-                decoration: const InputDecoration(labelText: ('Password')),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your password';
-                  }
-                  return null;
-                }),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: ElevatedButton(
-                onPressed: () {
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
                   if (_loginPageKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RegisterPage()),
+                    final token = await APIService().loginUser(
+                      _emailController.text,
+                      _passwordController.text,
                     );
+
+                    if (token != null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Login failed! Please try again.')),
+                      );
+                    }
                   }
                 },
                 child: const Text('Login'),
               ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Do not have an account yet? Register here.',
-                  style: TextStyle(color: Color.fromARGB(255, 3, 39, 244)),
-                ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterPage()),
+                  );
+                },
+                child: const Text('Don\'t have an account? Register here.'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
