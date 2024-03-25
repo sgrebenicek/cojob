@@ -1,3 +1,4 @@
+
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cojob/pages/chat_page.dart';
@@ -6,10 +7,10 @@ import 'package:cojob/secure_storage.dart';
 import 'package:cojob/variables/text_sizes.dart';
 import 'package:cojob/widgets/message.dart';
 import 'package:flutter/material.dart';
+import 'package:cojob/api_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   HomePageState createState() => HomePageState();
 }
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   final SecureStorage _secureStorage = SecureStorage();
 
+  final APIService _apiService = APIService();
   @override
   void initState() {
     super.initState();
@@ -27,7 +29,7 @@ class HomePageState extends State<HomePage> {
     String? token = await _secureStorage.getToken();
     if (token == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       });
@@ -48,7 +50,6 @@ class HomePageState extends State<HomePage> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            
             icon: Icon(Icons.notifications),
             label: 'Notifications',
           ),
@@ -72,12 +73,12 @@ class HomePageState extends State<HomePage> {
                         size: 30,
                       ),
                       onPressed: () async {
-                        final SecureStorage secureStorage = SecureStorage();
-                        await secureStorage.deleteToken();
+                        await _apiService.logoutUser();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const HomePage()),
+                            builder: (context) => const LoginPage(),
+                          ),
                         );
                       },
                     ),
@@ -101,13 +102,7 @@ class HomePageState extends State<HomePage> {
                         Icons.settings_outlined,
                         size: 30,
                       ),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ChatPage()),
-                        );
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),
@@ -117,9 +112,9 @@ class HomePageState extends State<HomePage> {
                   itemCount: 20,
                   itemBuilder: (BuildContext context, int index) {
                     return const Message(
-                      name: 'David Langer',
+                      name: 'User Name',
                       content:
-                          'We have defined simply a Stateless widget which acts as a simple button that uses a GestureDetector to detect the functions and also accepts an icon as the child to be displayed inside the button. It is a rounded button with a fixed height and width. We can alter the color if we need it, but it already has a custom color of translucent white.',
+                          'Latest message from this user',
                     );
                   },
                 ),
@@ -131,3 +126,4 @@ class HomePageState extends State<HomePage> {
     );
   }
 }
+

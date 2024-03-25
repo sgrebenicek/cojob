@@ -1,3 +1,5 @@
+
+import 'package:cojob/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,12 +16,17 @@ class Message extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
       child: GestureDetector(
-        onTap: null,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatPage()),
+          );
+        },
         child: Container(
           width: double.infinity,
           height: 70,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant,
+            color: colorScheme.onSecondary,
             borderRadius: const BorderRadius.all(Radius.circular(16)),
           ),
           child: Padding(
@@ -42,10 +49,7 @@ class Message extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.titleLarge?.copyWith(
                               color: colorScheme.onSurface,
-                            ) ??
-                            GoogleFonts.openSans(
-                              fontSize: 22,
-                            ),
+                            )
                       ),
                       Text(
                         content,

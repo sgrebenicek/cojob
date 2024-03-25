@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 
 class APIService {
   final SecureStorage _secureStorage = SecureStorage();
+
+  final _baseUrl = 'http://localhost:3000/api/auth';
   Future<bool> registerUser(
       String firstName, String lastName, String email, String password) async {
-    final url = Uri.parse('http://localhost:3000/api/auth/register');
+    final url = Uri.parse('$_baseUrl/register');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -30,7 +32,7 @@ class APIService {
   }
 
   Future<String?> loginUser(String email, String password) async {
-    final url = Uri.parse('http://localhost:3000/api/auth/login');
+    final url = Uri.parse('$_baseUrl/login');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -50,6 +52,85 @@ class APIService {
       return body['token'];
     } else {
       print('bad');
+      return null;
+    }
+  }
+
+  Future<bool> logoutUser() async {
+    final String? token = await _secureStorage.getToken();
+    if (token == null) {
+      print('No token found');
+      return false;
+    }
+
+    final url = Uri.parse('$_baseUrl/api/auth/logout');
+    final response = await http.delete(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'token': token,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      await _secureStorage.deleteToken();
+      print('Logged out successfully');
+      return true;
+    } else {
+      print('Failed to log out');
+      return false;
+    }
+  }
+
+  Future<bool> sendMessage(int senderId, int receiverId, String message) async {
+    final url = Uri.parse('$_baseUrl/messages/send');
+    final token = await _secureStorage.getToken();
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'message': message,
+      }),
+    );
+    return response.statusCode == 201;
+  }
+
+  Future<List<dynamic>?> fetchMessages(int userId1, int userId2) async {
+    final url =
+        Uri.parse('$_baseUrl/messages?userId1=$userId1&userId2=$userId2');
+    final token = await _secureStorage.getToken();
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<dynamic>?> fetchAllUsers() async {
+    final url = Uri.parse('$_baseUrl/users');
+    final token = await _secureStorage.getToken();
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
       return null;
     }
   }

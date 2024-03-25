@@ -69,7 +69,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     );
 
                     if (success) {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const LoginPage()),
                       );
@@ -84,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginPage()),
                   );

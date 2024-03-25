@@ -7,19 +7,4 @@ final ThemeData mainTheme = ThemeData(
     seedColor: Colors.lightBlue,
     brightness: Brightness.dark,
   ),
-  textTheme: TextTheme(
-    displayLarge: GoogleFonts.openSans(
-      fontSize: 64,
-      fontWeight: FontWeight.bold,
-    ),
-    titleLarge: GoogleFonts.openSans(
-      fontSize: 32,
-    ),
-    bodyMedium: GoogleFonts.openSans(
-      fontSize: 16,
-    ),
-    displaySmall: GoogleFonts.openSans(
-      fontSize: 12,
-    ),
-  ),
 );

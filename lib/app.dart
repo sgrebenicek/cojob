@@ -1,4 +1,6 @@
 import 'package:cojob/pages/home_page.dart';
+import 'package:cojob/pages/login_page.dart';
+import 'package:cojob/variables/themes.dart';
 import 'package:flutter/material.dart';
 
 class MainApp extends StatelessWidget {
@@ -6,9 +8,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const LoginPage(),
+      theme: mainTheme,
     );
   }
 }

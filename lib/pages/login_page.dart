@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
 
                     if (token != null) {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const HomePage()),
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const RegisterPage()),
