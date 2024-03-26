@@ -47,7 +47,9 @@ class APIService {
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
       final String? token = body['token'];
-      print(token);
+      print(body);
+      final String userId = body['userId'].toString();
+      await _secureStorage.storeUserId(userId);
       await _secureStorage.storeToken(token!);
       return body['token'];
     } else {
@@ -84,9 +86,16 @@ class APIService {
     }
   }
 
-  Future<bool> sendMessage(int senderId, int receiverId, String message) async {
+  Future<bool> sendMessage(int receiverId, String message) async {
     final url = Uri.parse('$_baseUrl/messages/send');
     final token = await _secureStorage.getToken();
+    final String? senderId =
+        await _secureStorage.getUserId(); // Retrieve the actual userId
+    if (senderId == null) {
+      print('No userId found');
+      return false;
+    }
+
     final response = await http.post(
       url,
       headers: {
@@ -94,7 +103,7 @@ class APIService {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        'senderId': senderId,
+        'senderId': senderId, // Use the actual userId
         'receiverId': receiverId,
         'message': message,
       }),

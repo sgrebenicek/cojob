@@ -16,12 +16,7 @@ class Message extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ChatPage()),
-          );
-        },
+        onTap:null,
         child: Container(
           width: double.infinity,
           height: 70,

@@ -1,27 +1,62 @@
+import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:cojob/widgets/chat_message.dart';
+import 'package:flutter/material.dart';
+import 'package:cojob/api_service.dart';
+import 'package:cojob/secure_storage.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final int receiverId;
+
+  const ChatPage({super.key, required this.receiverId});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  ChatPageState createState() => ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
-  final TextEditingController _messageController = TextEditingController();
+class ChatPageState extends State<ChatPage> {
+  final _apiService = APIService();
+  final _secureStorage = SecureStorage();
+  final _messageController = TextEditingController();
+  List<dynamic> _messages = [];
+  Timer? _timer;
 
   @override
-  void dispose() {
-    _messageController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _fetchMessages();
+    refreshMessages();
   }
 
-  void _sendMessage() {
-    final String text = _messageController.text;
-    print("Sending message: $text");
-    _messageController.clear();
+  void refreshMessages() {
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer t) => _fetchMessages(),
+    );
+  }
+
+  void _fetchMessages() async {
+    final String? userId = await _secureStorage.getUserId();
+    if (userId != null) {
+      final messages =
+          await _apiService.fetchMessages(int.parse(userId), widget.receiverId);
+      if (messages != null) {
+        setState(() {
+          _messages = messages;
+        });
+      }
+    }
+  }
+
+  void _sendMessage() async {
+    if (_messageController.text.isNotEmpty) {
+      final success = await _apiService.sendMessage(
+          widget.receiverId, _messageController.text);
+      if (success) {
+        _messageController.clear();
+        _fetchMessages(); // Refresh the message list after sending a message
+      }
+    }
   }
 
   @override
@@ -55,18 +90,12 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Expanded(
             child: ListView.builder(
-              reverse: true,
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return const Column(
-                  children: <Widget>[
-                    ChatMessage(
-                      content: 'Ahoj',
-                      senderId: 1,
-                      timeStamp: 1,
-                      
-                    ),
-                  ],
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return ChatMessage(
+                  content: message['message'],
+                  senderId: message['senderId'],
                 );
               },
             ),
